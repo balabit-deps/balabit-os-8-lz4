@@ -1,0 +1,120 @@
+--- a/Makefile
++++ b/Makefile
+@@ -127,7 +127,7 @@
+ 	$(MAKE) -C $(TESTDIR) $@
+ 	$(MAKE) -C $(EXDIR) $@
+ 
+-clangtest: CFLAGS ?= -O3
++clangtest: CFLAGS ?= -O2
+ clangtest: CFLAGS += -Werror -Wconversion -Wno-sign-conversion
+ clangtest: CC = clang
+ clangtest: clean
+@@ -138,15 +138,15 @@
+ 
+ clangtest-native: clean
+ 	clang -v
+-	CFLAGS="-O3 -Werror -Wconversion -Wno-sign-conversion" $(MAKE) -C $(LZ4DIR)  all    CC=clang
+-	CFLAGS="-O3 -Werror -Wconversion -Wno-sign-conversion" $(MAKE) -C $(PRGDIR)  native CC=clang
+-	CFLAGS="-O3 -Werror -Wconversion -Wno-sign-conversion" $(MAKE) -C $(TESTDIR) native CC=clang
++	CFLAGS="-O2 -g -Werror -Wconversion -Wno-sign-conversion" $(MAKE) -C $(LZ4DIR)  all    CC=clang
++	CFLAGS="-O2 -g -Werror -Wconversion -Wno-sign-conversion" $(MAKE) -C $(PRGDIR)  native CC=clang
++	CFLAGS="-O2 -g -Werror -Wconversion -Wno-sign-conversion" $(MAKE) -C $(TESTDIR) native CC=clang
+ 
+ usan: clean
+-	CC=clang CFLAGS="-O3 -g -fsanitize=undefined" $(MAKE) test FUZZER_TIME="-T30s" NB_LOOPS=-i1
++	CC=clang CFLAGS="-O2 -g -fsanitize=undefined" $(MAKE) test FUZZER_TIME="-T30s" NB_LOOPS=-i1
+ 
+ usan32: clean
+-	CFLAGS="-m32 -O3 -g -fsanitize=undefined" $(MAKE) test FUZZER_TIME="-T30s" NB_LOOPS=-i1
++	CFLAGS="-m32 -O2 -g -fsanitize=undefined" $(MAKE) test FUZZER_TIME="-T30s" NB_LOOPS=-i1
+ 
+ .PHONY: staticAnalyze
+ staticAnalyze: clean
+@@ -159,9 +159,9 @@
+ platformTest: clean
+ 	echo "\n ---- test lz4 with $(CC) compiler ----"
+ 	$(CC) -v
+-	CFLAGS="-O3 -Werror"         $(MAKE) -C $(LZ4DIR) all
+-	CFLAGS="-O3 -Werror -static" $(MAKE) -C $(PRGDIR) all
+-	CFLAGS="-O3 -Werror -static" $(MAKE) -C $(TESTDIR) all
++	CFLAGS="-O2 -Werror"         $(MAKE) -C $(LZ4DIR) all
++	CFLAGS="-O2 -Werror -static" $(MAKE) -C $(PRGDIR) all
++	CFLAGS="-O2 -Werror -static" $(MAKE) -C $(TESTDIR) all
+ 	$(MAKE) -C $(TESTDIR) test-platform
+ 
+ .PHONY: versionsTest
+@@ -169,7 +169,7 @@
+ 	$(MAKE) -C $(TESTDIR) $@
+ 
+ gpptest gpptest32: CC = "$(CXX) -Wno-deprecated"
+-gpptest gpptest32: CFLAGS = -O3 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Werror
++gpptest gpptest32: CFLAGS = -O2 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Werror
+ gpptest32: CFLAGS += -m32
+ gpptest gpptest32: clean
+ 	$(CXX) -v
+--- a/contrib/djgpp/Makefile
++++ b/contrib/djgpp/Makefile
+@@ -19,7 +19,7 @@
+ AR = $(CROSS)-ar
+ LD = $(CROSS)-gcc
+ 
+-CFLAGS ?= -O3 -std=gnu99 -Wall -Wextra -Wundef -Wshadow -Wcast-qual -Wcast-align -Wstrict-prototypes -pedantic -DLZ4_VERSION=\"$(RELEASE)\"
++CFLAGS ?= -O2 -std=gnu99 -Wall -Wextra -Wundef -Wshadow -Wcast-qual -Wcast-align -Wstrict-prototypes -pedantic -DLZ4_VERSION=\"$(RELEASE)\"
+ LDFLAGS ?= -s
+ SRC = programs/bench.c programs/lz4io.c programs/lz4cli.c
+ OBJ = $(SRC:.c=.o)
+--- a/contrib/gen_manual/Makefile
++++ b/contrib/gen_manual/Makefile
+@@ -30,7 +30,7 @@
+ # ################################################################
+ 
+ 
+-CXXFLAGS ?= -O3
++CXXFLAGS ?= -O2
+ CXXFLAGS += -Wall -Wextra -Wcast-qual -Wcast-align -Wshadow -Wstrict-aliasing=1 -Wswitch-enum -Wno-comment
+ CXXFLAGS += $(MOREFLAGS)
+ FLAGS   = $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -46,7 +46,7 @@
+ BUILD_STATIC:=yes
+ 
+ CPPFLAGS+= -DXXH_NAMESPACE=LZ4_
+-CFLAGS  ?= -O3
++CFLAGS  ?= -O2 -g
+ DEBUGFLAGS:= -Wall -Wextra -Wcast-qual -Wcast-align -Wshadow \
+              -Wswitch-enum -Wdeclaration-after-statement -Wstrict-prototypes \
+              -Wundef -Wpointer-arith -Wstrict-aliasing=1
+--- a/lib/dll/example/Makefile
++++ b/lib/dll/example/Makefile
+@@ -28,7 +28,7 @@
+ LIBDIR  := ../static
+ DLLDIR  := ../dll
+ 
+-CFLAGS  ?= -O3   # can select custom flags. For example : CFLAGS="-O2 -g" make
++CFLAGS  ?= -O2 -g   # can select custom flags. For example : CFLAGS="-O2 -g" make
+ CFLAGS  += -Wall -Wextra -Wundef -Wcast-qual -Wcast-align -Wshadow -Wswitch-enum \
+            -Wdeclaration-after-statement -Wstrict-prototypes \
+            -Wpointer-arith -Wstrict-aliasing=1
+--- a/programs/Makefile
++++ b/programs/Makefile
+@@ -45,7 +45,7 @@
+ OBJFILES := $(SRCFILES:.c=.o)
+ 
+ CPPFLAGS += -I$(LZ4DIR) -DXXH_NAMESPACE=LZ4_
+-CFLAGS   ?= -O3
++CFLAGS   ?= -O2 -g
+ DEBUGFLAGS:=-Wall -Wextra -Wundef -Wcast-qual -Wcast-align -Wshadow \
+             -Wswitch-enum -Wdeclaration-after-statement -Wstrict-prototypes \
+             -Wpointer-arith -Wstrict-aliasing=1
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -35,7 +35,7 @@
+ 
+ DEBUGLEVEL?= 1
+ DEBUGFLAGS = -g -DLZ4_DEBUG=$(DEBUGLEVEL)
+-CFLAGS  ?= -O3 # can select custom optimization flags. For example : CFLAGS=-O2 make
++CFLAGS  ?= -O2 -g # can select custom optimization flags. For example : CFLAGS=-O2 make
+ CFLAGS  += -Wall -Wextra -Wundef -Wcast-qual -Wcast-align -Wshadow \
+            -Wswitch-enum -Wdeclaration-after-statement -Wstrict-prototypes \
+            -Wpointer-arith -Wstrict-aliasing=1
