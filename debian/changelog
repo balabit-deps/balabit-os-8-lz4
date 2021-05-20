@@ -1,3 +1,11 @@
+lz4 (1.9.2-2ubuntu0.20.04.1) focal-security; urgency=medium
+
+  * SECURITY UPDATE: memory corruption due to an integer overflow bug
+    - debian/patches/CVE-2021-3520.patch: check outputSize in lib/lz4.c.
+    - CVE-2021-3520
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 20 May 2021 12:38:57 -0400
+
 lz4 (1.9.2-2) unstable; urgency=medium
 
   * Fix FTCBFS: Annotate the python3 dependency. (Closes: #944559)
